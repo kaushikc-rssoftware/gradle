@@ -1,0 +1,2 @@
+include 'BillEdgeDemo'
+rootProject.name = 'BillEdgeDemo'

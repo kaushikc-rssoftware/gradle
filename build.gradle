@@ -1,0 +1,56 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.3'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'application'
+	id "com.palantir.docker" version "0.36.0"
+}
+group = 'com.bill'
+version = '0.0.1-SNAPSHOT'
+mainClassName = 'com.bill.BillEdgeDemo.BillEdgeDemoApplication'
+java {
+	sourceCompatibility = '17'
+}
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+repositories {
+	mavenCentral()
+}
+docker {
+	// Define the name of the Docker image
+	name = 'billimage'
+	// Specify the Dockerfile to use
+	dockerfile = file('Dockerfile')
+	// Define additional Docker build arguments if needed
+	 buildArgs(['BUILD': '1.2.3', 'DISTRIBUTION_IMAGE_DIR': 'abcd' ])
+	 copySpec.with {
+		from('.') {
+			include 'src/**'
+			into './'
+		}
+	}
+	copySpec.with {
+		from('.') {
+			include '*.gradle'
+			into '.'
+		}
+	}
+	// Specify additional images (tags) to be pushed
+	//images = ['kaushikc/billinfo:latest']
+}
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+bootJar {
+	mainClassName = 'com.bill.BillEdgeDemo.BillEdgeDemoApplication'
+}
+tasks.named('test') {
+	useJUnitPlatform()
+}
